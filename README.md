@@ -1,9 +1,10 @@
 POGOLib [![AppVeyor](https://img.shields.io/appveyor/ci/AeonLucid/pogolib/master.svg?maxAge=60)](https://ci.appveyor.com/project/AeonLucid/pogolib) [![NuGet](https://img.shields.io/nuget/v/POGOLib.Official.svg?maxAge=60)](https://www.nuget.org/packages/POGOLib.Official)
 ===================
 
-POGOLib is written in C# and aims to be a community-driven PokémonGo API. Feel free to submit pull requests.
+POGOLib is a community-driven Pokemon Go APi wirrten in C#.
+Feel free to contribute your code.
 
-The library is a bit low-level now but the goal is to provide a high-level library while also allowing low-level request crafting.
+The goal of this API is to provide a high-level library while also allowing low-level request implementations.
 
 # Changelog
 
@@ -35,9 +36,9 @@ You can view an example of how I implemented this in the [demo](https://github.c
 
 ## Re-authentication
 
-When PokémonGo tells POGOLib that the authentication token is no longer valid, we try to re-authenticate. This happens on intervals of 5, 10, 15, 20, 30... 60 (max) seconds. It keeps trying to re-authenticate. All other remote procedure calls that tried to request data will be stopped and continue when the session has re-authenticated. It will be like nothing happened.
+When Pokémon Go tells POGOLib that the authentication token is no longer valid, the API will try to re-authenticate on the intervals of 5 seconds. API stops re-authenticate until it reaches 60 second (max). All other remote procedure calls that tried to request data will be stopped and continue when the session has re-authenticated.
 
-When the session has successful re-authenticated, we fire an event. You can subscribe to the event to receive a notification.
+When the session has successful re-authenticated, the API will fire an event. You can subscribe to that event to receive a notification.
 
 ```csharp
 session.AccessTokenUpdated += (sender, eventArgs) =>
@@ -55,7 +56,7 @@ The heartbeat checks every second if:
  - the seconds since the last heartbeat is greater than or equal to the [maximum allowed refresh seconds](https://github.com/AeonLucid/POGOProtos/blob/master/src/POGOProtos/Settings/MapSettings.proto#L9) of the game settings;
  - the distance moved is greater than or equal to the [minimum allowed distance](https://github.com/AeonLucid/POGOProtos/blob/master/src/POGOProtos/Settings/MapSettings.proto#L10) of the game settings;
 
-If one of these is true, a heartbeat will be sent. This automatically fetches the map data surrounding your current position, your inventory data and the game settings.
+If one of above conditions is met, a heartbeat will be sent. The API will automatically fetch the map data surrounding your current position, your inventory data and the game settings.
 
 If you want to receive a notification when these update, you can subscribe to the following events.
 
@@ -81,7 +82,7 @@ session.Map.Update += (sender, eventArgs) =>
 
 ## Throttling
 
-Requests are throttled automatically, this means that only one request will be sent every X milliseconds. You can configure the milliseconds like this.
+Requests are limited by throttling by default, which means only one request will be sent every X milliseconds. You can configure the X milliseconds by assigning:
 
 ```csharp
 POGOLib.Configuration.ThrottleDifference = 1000;
@@ -89,13 +90,13 @@ POGOLib.Configuration.ThrottleDifference = 1000;
 
 ## PokeHash
 
-POGOLib has built-in support for the PokeHash service and does also support multiple keys. You have to use this service if you want a minimal chance of receiving captcha's.
+POGOLib has built-in support for the PokeHash service and also supports multiple hash keys. You have to use this service if you want a minimal chance of receiving Captchas.
 
 Read more: [https://talk.pogodev.org/d/51-api-hashing-service-by-pokefarmer](https://talk.pogodev.org/d/51-api-hashing-service-by-pokefarmer)
 
 ## Custom crafted requests
 
-*This is for now almost the only way to receive data. It's easy though!*
+*This is for now the only way to receive data. It's easy though!*
 
 If you want to know what requests are available, click [here](https://github.com/AeonLucid/POGOProtos/tree/master/src/POGOProtos/Networking/Requests/Messages).
 If you want to know what responses belong to the requests, click [here](https://github.com/AeonLucid/POGOProtos/tree/master/src/POGOProtos/Networking/Responses).
@@ -154,7 +155,7 @@ if (closestFort != null)
 
 # Example
 
-This example logs in, retrieves nearby pokestops, checks if you have already searched them. If you have not, he will check the distance between you and the pokestop. If you are close enough to the pokestop, he will search it and display the results.
+The code bellow shows how to logs in, retrieve nearby pokestops and check if you have already searched them. The API will also check the distance between you and the pokestop if you haven't done it already. If you are close enough to the pokestop, it will search and display the results.
 
 ```csharp
 var loginProvider = new PtcLoginProvider("username", "password");
